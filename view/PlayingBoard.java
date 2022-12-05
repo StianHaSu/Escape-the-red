@@ -6,22 +6,34 @@ import javax.swing.*;
 import controller.Controller;
 import model.GameCharacter;
 import view.listeners.Buttons;
+import view.listeners.Menu;
 import view.listeners.Restart;
 
 public class PlayingBoard{
     private PlayingSquare[][] board = new PlayingSquare[30][38];   
     private JFrame frame = new JFrame("Pacman");
+    
     private JPanel boardP = new JPanel();
     private JPanel skjerm = new JPanel();
+    private JPanel top = new JPanel();
+    
     private Controller controll;
     private Color backgroundColor = new Color(0, 0, 56);
+    
     private JButton restart = new JButton("Restart");
+    private JButton menu = new JButton("Menu");
 
     public PlayingBoard(Controller controll){
         this.controll = controll;
 
+        try{
+            UIManager.setLookAndFeel(
+                UIManager.getCrossPlatformLookAndFeelClassName()
+            );
+        } catch (Exception e){System.out.println(e);}
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(1000, 1200));
+        frame.setPreferredSize(new Dimension(1000, 1000));
 
         skjerm.setLayout(new BorderLayout());
 
@@ -29,7 +41,17 @@ public class PlayingBoard{
         boardP.setPreferredSize(new Dimension(1000, 850));
 
         restart.addActionListener(new Restart(controll));
-        restart.setPreferredSize(new Dimension(1000, 50));
+        restart.setPreferredSize(new Dimension(500, 50));
+        restart.setBackground(Color.BLACK);
+        restart.setForeground(Color.WHITE);
+        restart.setOpaque(true);
+
+        menu.addActionListener(new Menu(controll));
+        menu.setPreferredSize(new Dimension(500, 50));
+        menu.setOpaque(true);
+        menu.setBackground(Color.BLACK);
+        menu.setForeground(Color.WHITE);
+     
 
         for (int i = 0; i < board.length; i++){
             for (int e = 0; e < board[0].length; e++){
@@ -46,14 +68,19 @@ public class PlayingBoard{
 
         frame.addKeyListener(new Buttons(controll));
 
+        top.setLayout(new BorderLayout());
+        top.add(restart, BorderLayout.EAST);
+        top.add(menu, BorderLayout.WEST);
+
         skjerm.add(boardP, BorderLayout.CENTER);
-        skjerm.add(restart, BorderLayout.NORTH);
+        skjerm.add(top, BorderLayout.NORTH);
 
         frame.add(skjerm);
         frame.pack();
         frame.setVisible(true);
 
         frame.requestFocusInWindow();
+        
     }
 
     public PlayingSquare[][] getBoard(){
@@ -93,7 +120,9 @@ public class PlayingBoard{
                     PlayingSquare sqr = board[counter1][counter2];
                     sqr.makeObstacle();
                     sqr.setOpaque(true);
-                    sqr.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                    sqr.setBackground(Color.WHITE);
+
+                    if (counter1 == 0 || counter2 == 0 || counter1 == 29 || counter2 == 37) sqr.setBackground(Color.BLACK);
                 }
                 
                 counter2++;
@@ -110,5 +139,9 @@ public class PlayingBoard{
 
     public void stop(){
         frame.dispose();
+    }
+
+    public JFrame getWindow(){
+        return frame;
     }
 }

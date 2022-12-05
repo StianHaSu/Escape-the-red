@@ -7,6 +7,7 @@ import java.util.Stack;
 import controller.Controller;
 
 
+
 public class Ghost extends GameCharacter{
 
     private Stack<int[]> path = null;

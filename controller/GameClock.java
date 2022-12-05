@@ -12,7 +12,15 @@ public class GameClock implements Runnable{
     @Override
     public void run() {
         while (!controll.finished()){
-            if (controll.getTicks() % 5 == 0) controll.ghostSearch();
+            //Makes ghosts search every other tick
+            if (controll.getTicks() % 2 == 0) controll.ghostSearch();
+
+            //Makes a new ghost every 100 tick
+            if (controll.getTicks() % 100 == 0) controll.newGhost();
+
+            //Speeds up every 200 ticks
+            if (controll.getTicks() % 200 == 0 && tid > 10) tid -= 5; 
+            
             try {
                 Thread.sleep(tid);
                 controll.newTick();

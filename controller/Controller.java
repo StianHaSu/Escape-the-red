@@ -2,9 +2,12 @@ package controller;
 
 import view.PlayingBoard;
 import view.PlayingSquare;
+import view.StartSkjerm;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.concurrent.CountDownLatch;
@@ -17,17 +20,18 @@ public class Controller {
     private PlayingBoard pb;
     private PlayingSquare[][] squares;
     private PacMan pac;
-    private Ghost ghost1, ghost2, ghost3;
+    private Ghost ghost1;
     private ArrayList<Ghost> ghosts = new ArrayList<>();
     private LinkedList<GameCharacter> characters = new LinkedList<>();
     private Thread gameClock;
-    private boolean gameFinished = false;
+    private boolean gameFinished = true;
     private int ticks = 0;
     private LevelOne lvl;
     private boolean visualise = false;
     private Color backgroundColor = new Color(0, 0, 56);
 
     private ArrayList<PlayingSquare> visual = new ArrayList<>();
+    private StartSkjerm menu = null;
 
     public Controller(){
         pb = new PlayingBoard(this);
@@ -39,23 +43,7 @@ public class Controller {
         pac = new PacMan(20, 20, this);
         characters.add(pac);
 
-        ghost1 = new Ghost(1, 1, this);
-        characters.addLast(ghost1);
-
-        //ghost2 = new Ghost(0, 37, this);
-        //characters.addLast(ghost2);
-//
-        //ghost3 = new Ghost(29, 29, this);
-        //characters.addLast(ghost3);
-
-        ghosts.add(ghost1);
-        //ghosts.add(ghost2);
-        //ghosts.add(ghost3);
-
-        pac.walk();
-
-        gameClock = new Thread(new GameClock(this, 40));
-        gameClock.start();
+        menu = new StartSkjerm(pb, this);
 
     }
 
@@ -110,17 +98,6 @@ public class Controller {
     public void newGame(){
         if (!gameFinished) return;
 
-        int[] pacpos = pac.getPos();
-
-        PlayingSquare pacsqr = squares[pacpos[0]][pacpos[1]];
-        pb.removeCharacter(pacsqr);
-        pacsqr.removePacman();
-
-        int[] ghospos = ghost1.getPos();
-        PlayingSquare ghosqr = squares[ghospos[0]][ghospos[1]];
-        pb.removeCharacter(ghosqr);
-        pacsqr.removePacman();
-
         characters.removeAll(characters);
         ghosts.removeAll(ghosts);
 
@@ -139,8 +116,8 @@ public class Controller {
         pac.walk();
 
         gameFinished = false;
-        visualise = true;
-        gameClock = new Thread(new GameClock(this, 50));
+        //visualise = true;
+        gameClock = new Thread(new GameClock(this, 40));
         gameClock.start();
 
     }
@@ -152,8 +129,8 @@ public class Controller {
         }
 
         LinkedList<int[]> queue = new LinkedList<>();
-        ArrayList<int[]> visited = new ArrayList<>();
-        ArrayList<String> codes = new ArrayList<>();
+        HashSet<int[]> visited = new HashSet<>();
+        HashSet<String> codes = new HashSet<>();
         HashMap<int[], int[]> graph = new HashMap<>(); 
         Stack<int[]> path = new Stack<>();
 
@@ -263,5 +240,15 @@ public class Controller {
 
     public void visualiser(){
         visualise = true;
+    }
+
+    public void newGhost(){
+        Ghost newGhost = new Ghost(16, 20, this);
+        characters.add(newGhost);
+        ghosts.add(newGhost);
+    }
+
+    public void openMenu(){
+        menu = new StartSkjerm(pb, this);
     }
 }
